@@ -508,12 +508,48 @@ function viewNotation(){
  <div class="card"><h2>Reading a move</h2><p><b>Nf3</b> → knight goes to f3.</p><p><b>Bxe4</b> → bishop captures on e4.</p><p><b>Nbd2</b> → two knights can reach d2, so the extra <b>b</b> says it's the knight from the b-file.</p><p><b>1. e4 c6</b> → move 1: White pawn to e4, Black pawn to c6.</p>
  <h2 style="margin-top:20px">Review marks</h2><table><tr><td><kbd>!!</kbd></td><td>brilliant</td></tr><tr><td><kbd>!</kbd></td><td>great move</td></tr><tr><td><kbd>?!</kbd></td><td>inaccuracy</td></tr><tr><td><kbd>?</kbd></td><td>mistake</td></tr><tr><td><kbd>??</kbd></td><td>blunder</td></tr></table></div></div>`}
 
-const TASKS=[['Coordinates: 5 minutes','Beat your best score from both sides.','#coords'],['Today\'s lesson + puzzles','Finish the next unfinished lesson here.','#lessons'],['20 Lichess theme puzzles','The theme of your current lesson.','https://lichess.org/training/themes'],['3–5 Rapid games (15|10)','Blunder check on every single move.','https://www.chess.com/play/online'],['Review every loss','Find the first ?? or ?, and write it in your tracker Notes.',''],['One video','Naroditsky Speedrun or GothamChess.','https://www.youtube.com/@DanielNaroditskyGM']];
+const VIDS=[
+ ['Beginner To Master, Chess Speedrun Part 1','GM Daniel Naroditsky','R2skmBe07aQ','He explains every move out loud. Pause and guess his move first.'],
+ ['Learn The London System in 10 minutes','Easy Chess','lI5pUaJusT4','Your White opening. Follow along on a board.'],
+ ['Learn the Caro-Kann Defense (10-Minute Chess Openings)','GothamChess','rmbU97iftC8','Your Black opening against 1.e4.'],
+ ['How To Win At Chess, Step by Step','GothamChess','dO6K-F7eHpM','How to beat players at your level.'],
+ ['Every Chess Tactic Explained: Fork, Pin, Skewer and More','Chess tactics','Pl4dZ5bvGg4','Seven tactics behind almost every combination.'],
+ ['Beginner To Master, Chess Speedrun Part 2','GM Daniel Naroditsky','VBxmm4zzC1g','Watch how he punishes mistakes at low ratings.'],
+ ['Best Chess Tactics for Beginners','Chess tactics','EFODqEcAkxA','Fork, pin, skewer, discovered attack, and how to spot them.'],
+ ['Caro Kann made EASY: A Starter Pack','Caro-Kann','1XHfAUROXQc','Exchange, Advance and Classical in one video.'],
+ ['10 Chess Tips To CRUSH Everyone','GothamChess','fGFl4GjVvrA','Plans, attacking and what to do after the opening.'],
+ ['The Skewer','FM Mike Klein (Chess.com)','2KlDixnZMhM','Skewers, the reverse of pins.'],
+ ['Endgames for Beginners','Endgame basics','KX-HEPyHhn0','The basic endgame ideas every player needs.'],
+ ['Endgames for Beginners: Winning with Opposition','Endgame basics','GVMOaTTZ3Oo','The king-and-pawn trick from your Lessons.'],
+ ['How To Win At Chess (Ep 5, 1200-1600)','GothamChess','i94pEwDhJCg','London and Caro-Kann games at the level you are aiming for.'],
+ ['Magnus Teaches the London System (to every Elo)','Magnus Carlsen','baJ848UCB-0','The World Champion on your White opening.'],
+ ['NEW SPEEDRUN, Episode 1','GM Naroditsky and GM Bortnyk','zEkwjGCA2M4','Games plus analysis: watch the thinking process.'],
+ ['WIN More Endgames With These 5 Magic Rules','Endgames','tO3Xhz7c-rg','Rule of the square, opposition, key squares.'],
+ ['Every Beginner Chess Endgame You Need to Know','Endgames','DWcxzBPNIMQ','The 5 most important beginner endgames.'],
+ ['Sideline Strategies: Beginner Level Openings','GM Naroditsky (Develop Your Instincts)','A-HTpnOfVcE','What to do when opponents play strange openings.'],
+ ['12 Endgames That Every Player Should Know','Chess.com','oWDPxirOPJk','Lucena, Philidor and more. Watch twice.'],
+ ['Chess Tactics You MUST Know','Chess tactics','kcxBucFaosc','Review day: the 7 essential tactical themes.']
+];
+const START=new Date(2026,10,26);
+function dayNo(){return Math.max(1,Math.floor((new Date()-START)/864e5)+1)}
+function lichessDiff(){const r=store.pr||600;return r<800?'Easiest':r<1000?'Easier':r<1400?'Normal':'Harder'}
+function tasks(){const mu=LV?maxUnlocked():(Object.keys(store.lv||{}).length+1);const L=LV?LV[mu-1]:null;const key=L?L.k:'hangingPiece',tname=L?L.t:'Free pieces';
+ const bw=store.best.w||0,bb=store.best.b||0;
+ const coord=bw<10?['Coordinates: steps 1–2 (5 min)','Columns then Rows, names on. Move on when your streak hits 10.']:bw<20?['Coordinates: speed test as White (5 min)',`Beat your best of ${bw}. Target 20.`]:bb<20?['Coordinates: speed test as Black (5 min)',`Black best is ${bb}. Target 20, then keep both above 20.`]:['Coordinates: names hidden (5 min)',`Best ${bw} White / ${bb} Black. Try to beat both.`];
+ const v=VIDS[(dayNo()-1)%VIDS.length];
+ return [
+  [coord[0],coord[1],'#coords'],
+  [`Level ${mu}: ${tname}`,`10 puzzles${L?', about '+L.r:''}. Aim for ★★ or better: replay any ★ level tomorrow.`,'#levels'],
+  [`20 Lichess puzzles: ${tname}`,`Open the link, then set Difficulty to "${lichessDiff()}" (Difficulty menu beside the board). Mostly green = right level; mostly red = go one step easier.`,'https://lichess.org/training/'+key],
+  ['3–5 Rapid games at 15|10 on Chess.com','Play → Time control → 15|10. White: London (d4, Bf4, e3, Nf3, c3, Nbd2, Bd3). Black vs 1.e4: Caro-Kann (c6, d5). Blunder check every move.','https://www.chess.com/play/online'],
+  ['Review every loss (2 min each)','Game Review → find the FIRST ?? or ? → ask "what did I miss?" → write the move number and the reason in your tracker Notes.',''],
+  [`Video, day ${dayNo()}: ${v[0]}`,`${v[1]}. ${v[3]}`,'https://www.youtube.com/watch?v='+v[2]]
+ ]}
 function today(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 function streak(){const A=store.active||{};let n=0;const d=new Date();const key=x=>x.getFullYear()+'-'+(x.getMonth()+1)+'-'+x.getDate();
  if(!A[key(d)])d.setDate(d.getDate()-1);while(A[key(d)]){n++;d.setDate(d.getDate()-1)}return n}
 const BOOST=["Hikaru lost every game of his first tournament. Losing is part of the path.","You don't need motivation every day, just the habit. Small sessions count.","Rating goes up in stairs, not a smooth line. Flat weeks are normal before a jump.","Every loss you review is a lesson your friends didn't get.","Compare yourself to last week's you, not to anyone else.","Bad day? Do 10 puzzles and stop. Keeping the streak alive is a win.","Magnus studied 3–4 hours a day and still played football. Rest is training too."];
-function viewToday(){const k=today();const done=store.days[k]||[];const n=done.filter(Boolean).length;
+function viewToday(){if(!LV&&!lvLoading){loadLV(()=>{if((location.hash||'#today')==='#today')viewToday()});}const TASKS=tasks();const k=today();const done=store.days[k]||[];const n=done.filter(Boolean).length;
  const next=LESSONS.findIndex(l=>l.p.length&&!l.p.every(x=>store.solved[x]));
  const solved=Object.keys(store.solved).filter(x=>PZ[x]).length,total=Object.keys(PZ).length;
  const gdone=GLIST.filter(g=>store['game_'+g.id]).length;const lvd=Object.keys(store.lv||{}).length,lvpz=Object.keys(store.lvp||{}).length;

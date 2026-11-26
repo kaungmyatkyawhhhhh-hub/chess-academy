@@ -186,7 +186,7 @@ function attach(bd,canMove,onMove){
   if(drag.over&&drag.over!==sq)drag.over.classList.remove('over');if(sq&&sq!==drag.sq){sq.classList.add('over');drag.over=sq}});
  const end=e=>{if(!drag)return;const d=drag;drag=null;d.g.remove();d.sq.classList.remove('lift');if(d.over)d.over.classList.remove('over');
   const t=document.elementFromPoint(e.clientX,e.clientY);const sq=t&&t.closest?t.closest('#'+bd.id+' .sq'):null;
-  if(d.moved&&sq&&sq.dataset.s!==d.s)onMove(d.s,sq.dataset.s);else onMove(null,d.s)};
+  if(d.moved&&sq&&sq.dataset.s!==d.s)onMove(d.s,sq.dataset.s);else if(!d.moved)onMove(null,d.s)};
  bd.addEventListener('pointerup',end);bd.addEventListener('pointercancel',e=>{if(drag){drag.g.remove();drag.sq.classList.remove('lift');drag=null}});
 }
 
@@ -398,7 +398,7 @@ function viewLevel(){const L=LV[lv.n-1],P=L.p[lv.idx];const own=lv.side==='b'?(p
  if(q('lshow'))q('lshow').onclick=()=>{if(!myTurn)return;lv.first=false;const u=P.m.split(' ')[lv.ply];userMove(u.slice(0,2),u.slice(2,4),true)};
  if(q('lnext'))q('lnext').onclick=()=>{if(lastP)finishLevel();else{lv.idx++;startPz()}};
  attach(document.getElementById('lb'),s=>myTurn&&own(lv.pos[s]),(from,to)=>{if(!myTurn)return;
-  if(!from){if(own(lv.pos[to])){lv.sel=lv.sel===to?null:to;play.pick();viewLevel()}if(!lv.sel)return;from=lv.sel}
+  if(!from){if(own(lv.pos[to])){lv.sel=lv.sel===to?null:to;play.pick();viewLevel();return}if(!lv.sel)return;from=lv.sel}
   userMove(from,to,false)});
 }
 function userMove(from,to,shown){const P=LV[lv.n-1].p[lv.idx],M=P.m.split(' '),S=P.s.split(' ');const exp=M[lv.ply];
@@ -447,7 +447,7 @@ function drawRated(){const P=rp.cur,own=rp.side==='b'?(p=>!!p&&p===p.toLowerCase
  if(q('rhint'))q('rhint').onclick=()=>{if(!myTurn)return;rp.hint=true;rp.hintSq=P.m.split(' ')[rp.ply].slice(0,2);rp.msg='Hint: move the highlighted piece.';rp.mc='info';drawRated()};
  if(q('rshow'))q('rshow').onclick=()=>{if(!myTurn)return;rp.fail=true;const u=P.m.split(' ')[rp.ply];rMove(u.slice(0,2),u.slice(2,4),true)};
  attach(document.getElementById('rb'),sq=>myTurn&&own(rp.pos[sq]),(from,to)=>{if(!myTurn)return;
-  if(!from){if(own(rp.pos[to])){rp.sel=rp.sel===to?null:to;play.pick();drawRated()}if(!rp.sel)return;from=rp.sel}rMove(from,to,false)});
+  if(!from){if(own(rp.pos[to])){rp.sel=rp.sel===to?null:to;play.pick();drawRated();return}if(!rp.sel)return;from=rp.sel}rMove(from,to,false)});
 }
 function rMove(from,to,shown){const P=rp.cur,M=P.m.split(' '),S=P.s.split(' ');const exp=M[rp.ply];
  if(from+to===exp.slice(0,4)){const cap=!!rp.pos[to];rp.pos=applyU(rp.pos,exp);rp.from=from;rp.to=to;rp.sel=null;rp.hintSq=null;sndSan(S[rp.ply],cap);rp.ply++;
